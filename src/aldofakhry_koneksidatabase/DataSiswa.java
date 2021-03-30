@@ -26,15 +26,16 @@ public class DataSiswa extends javax.swing.JFrame {
     public DataSiswa() {
         initComponents();
         koneksi = DatabaseConnection.getKoneksi("localhost", "3306", "root", "", "db_sekolah");
+        
         showData();
     }
     
     DefaultTableModel dtm;
     public void showData(){
         
-        String[] kolon = {"NO","NIS","Nama","Kelas","Jurusan"};
+        String[] kolom = {"NO","NIS","Nama","Kelas","Jurusan"};
         
-        dtm = new DefaultTableModel(null, kolon);
+        dtm = new DefaultTableModel(null, kolom);
         try {
             Statement stat = koneksi.createStatement();
             String query = "SELECT * FROM t_siswa";
@@ -46,12 +47,13 @@ public class DataSiswa extends javax.swing.JFrame {
                 String kelas = rs.getString("kelas");
                 String jurusan = rs.getString("jurusan");
                 
-                dtm.addRow(new String[]{no+"",nama,kelas,jurusan});
+                dtm.addRow(new String[]{no+"",nis,nama,kelas,jurusan});
                 no++;}
             }
         catch(SQLException ex){
-            t_siswa.setModel(dtm);
+            ex.printStackTrace();
         }
+        t_siswa.setModel(dtm);
     }
 
     
