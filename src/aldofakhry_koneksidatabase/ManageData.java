@@ -6,6 +6,7 @@
 package aldofakhry_koneksidatabase;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
@@ -20,19 +21,25 @@ public class ManageData extends javax.swing.JDialog {
      * Creates new form ManageData
      */
     Connection koneksi;
-    public ManageData(java.awt.Frame parent, boolean modal) {
+    String action;
+    public ManageData(java.awt.Frame parent, boolean modal, String act, String nis) {
         super(parent, modal);
         initComponents();
         koneksi = DatabaseConnection.getKoneksi("localhost", "3306", "root", "", "db_sekolah");
-        
+
+        action = act;
+        if(action.equals("Edit")){
+            txtNIS.setEnabled(false);
+            showData(nis);
+        }
     }
-    
+
     public void SimpanData(){
         String nis      = txtNIS.getText();
         String nama     = txtNama.getText();
         String kelas    = cmbKelas.getSelectedItem().toString();
         String jurusan  = cmbJurusan.getSelectedItem().toString(); //BTW DI SQL NYA LENGTH NYA SAYA SET KE 255 AGAR CUKUP UNTUK NAMA JURUSAN
-        
+
         try{
             Statement stmt = koneksi.createStatement();
             String query = "INSERT INTO t_siswa(nis, nama, kelas, jurusan)" + "VALUES('"+nis+"','"+nama+"','"+kelas+"', '"+jurusan+"')";
@@ -48,6 +55,46 @@ public class ManageData extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "Terjadi Kesalahan pada Database");
         }
     }
+
+    void showData(String nis){
+        try{
+            Statement stmt = koneksi.createStatement();
+            String query = "SELECT * FROM t_siswa WHERE nis = '"+nis+"'";
+            ResultSet rs = stmt.executeQuery(query);
+            rs.first();
+            txtNIS.setText(rs.getString("nis"));
+            txtNama.setText(rs.getString("nama"));
+            cmbKelas.setSelectedItem(rs.getString("kelas"));
+            cmbJurusan.setSelectedItem(rs.getString("jurusan"));
+        }catch(SQLException ex){
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Terjadi Kesalahan di Query");
+        }
+    }
+    
+    public void EditData(){
+        String nis      = txtNIS.getText();
+        String nama     = txtNama.getText();
+        String kelas    = cmbKelas.getSelectedItem().toString();
+        String jurusan  = cmbJurusan.getSelectedItem().toString();
+        
+        try {
+            Statement stmt = koneksi.createStatement();
+            String query = "UPDATE t_siswa SET nama = '"+nama+"'," + "kelas ='"+kelas+"'," + "jurusan='"+jurusan+"' WHERE nis ='" +nis+ "'";
+            
+            System.out.println(query);
+            int berhasil = stmt.executeUpdate(query);
+            if(berhasil == 1){
+                JOptionPane.showMessageDialog(null, "Data berhasil Dirubah");
+            }else{
+                JOptionPane.showMessageDialog(null, "Data gagal Diubah");
+            }
+        }catch(SQLException ex){
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan pada query");
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -166,7 +213,8 @@ public class ManageData extends javax.swing.JDialog {
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-        SimpanData();
+        if(action.equals("Edit")) EditData();
+        else SimpanData();
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     /**
@@ -176,7 +224,7 @@ public class ManageData extends javax.swing.JDialog {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -197,18 +245,7 @@ public class ManageData extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ManageData dialog = new ManageData(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -45,8 +45,8 @@ public class DataSiswa extends javax.swing.JFrame {
                 String nis = rs.getString("nis");
                 String nama = rs.getString("nama");
                 String kelas = rs.getString("kelas");
-                String jurusan = rs.getString("jurusan");
-                
+                String jurusan = rs.getString("jurusan");                
+
                 dtm.addRow(new String[]{no+"",nis,nama,kelas,jurusan});
                 no++;}
             }
@@ -121,6 +121,11 @@ public class DataSiswa extends javax.swing.JFrame {
         });
 
         cmdUbah.setText("Ubah");
+        cmdUbah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdUbahActionPerformed(evt);
+            }
+        });
 
         cmdTambah.setText("Tambah");
         cmdTambah.addActionListener(new java.awt.event.ActionListener() {
@@ -130,6 +135,11 @@ public class DataSiswa extends javax.swing.JFrame {
         });
 
         cmdRefresh.setText("Refresh");
+        cmdRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdRefreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -176,7 +186,7 @@ public class DataSiswa extends javax.swing.JFrame {
 
     private void cmdTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdTambahActionPerformed
         // TODO add your handling code here:
-        ManageData tambahData = new ManageData(this, true);
+        ManageData tambahData = new ManageData(this, true, "Tambah","");
         tambahData.setVisible(true);
     }//GEN-LAST:event_cmdTambahActionPerformed
     
@@ -188,10 +198,11 @@ public class DataSiswa extends javax.swing.JFrame {
 
     private void cmdHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdHapusActionPerformed
         // TODO add your handling code here:
-        String thoseWhoWantsToBeDeleted = t_siswa.getValueAt(baris, 0).toString();
+        String thoseWhoWantsToBeDeleted = t_siswa.getValueAt(baris, 1).toString();
         try {
             Statement stmt = koneksi.createStatement();
             String query = "DELETE FROM t_siswa WHERE nis = '"+thoseWhoWantsToBeDeleted+"'";
+            System.out.println(query);
             int berhasil = stmt.executeUpdate(query);
             if(berhasil == 1){
                 JOptionPane.showMessageDialog(null, "Data Berhasil Dihapus");
@@ -204,6 +215,18 @@ public class DataSiswa extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_cmdHapusActionPerformed
+
+    private void cmdUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUbahActionPerformed
+        // TODO add your handling code here:
+        String nis = t_siswa.getValueAt(baris,1).toString();
+        ManageData tambahData = new ManageData(this,true, "Edit", nis);
+        tambahData.setVisible(true);
+    }//GEN-LAST:event_cmdUbahActionPerformed
+
+    private void cmdRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRefreshActionPerformed
+        // TODO add your handling code here:
+        showData();
+    }//GEN-LAST:event_cmdRefreshActionPerformed
 
     /**
      * @param args the command line arguments
